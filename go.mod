@@ -1,4 +1,4 @@
-module github.com/bitpoke/mysql-operator
+module github.com/bitpoke/mysql-operator-for-bitpoke-orch
 
 go 1.17
 

@@ -91,6 +91,21 @@ func NewStatefulSetSyncer(c client.Client, scheme *runtime.Scheme, cluster *mysq
 }
 
 func (s *sfsSyncer) SyncFn(in runtime.Object) error {
+	/*
+	在Kubernetes中，StatefulSet的ServiceName字段用于指定一个无头服务（Headless Service）的名称。无头服务是一种特殊类型的Service，它不会为Pod分配一个集群IP地址，而是直接返回Pod的IP地址列表。这对于StatefulSet来说非常重要，因为它允许每个StatefulSet的Pod都有一个稳定的网络标识，即使用Pod的名称和序号来访问。
+
+	具体来说，StatefulSet的Pod通常都有一个唯一的标识符，它们是由StatefulSet的名称和Pod的序号（从0开始）组成的。例如，如果StatefulSet的名称是web，那么创建的Pod可能具有名称web-0、web-1、web-2等。通过无头服务，可以解析这些Pod的名称到它们的IP地址。
+
+	这种机制有几个重要的用途：
+
+	稳定的网络标识：每个Pod都有一个稳定的网络标识，这对于需要稳定网络端点的有状态应用来说非常关键。例如，数据库集群中的每个节点可能需要知道其他节点的网络地址。
+
+	DNS解析：由于无头服务，Kubernetes的DNS服务可以解析Pod的名称到它们的IP地址。这使得在集群内部的其他Pod或服务可以通过Pod的名称来发现和访问StatefulSet中的Pod。
+
+	发现机制：对于某些应用，比如分布式数据库或缓存集群，每个节点需要知道集群中其他节点的地址。通过使用无头服务和StatefulSet，这些节点可以通过DNS发现机制来找到彼此。
+
+	在StatefulSet的资源定义中，通过指定ServiceName字段，Kubernetes知道要为StatefulSet的Pod创建一个与之关联的无头服务。这样，StatefulSet的Pod就可以通过无头服务提供的DNS解析功能来获得稳定的网络标识和发现机制。
+	*/
 	out := in.(*apps.StatefulSet)
 
 	s.cluster.Status.ReadyNodes = int(out.Status.ReadyReplicas)

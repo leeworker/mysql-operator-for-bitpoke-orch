@@ -102,7 +102,7 @@ func isReady(obj runtime.Object) bool {
 		}
 	}
 	return false
-}
+}``
 
 func isRunning(obj runtime.Object) bool {
 	pod := obj.(*corev1.Pod)
@@ -311,7 +311,7 @@ func (r *ReconcileMysqlNode) getNodeCluster(ctx context.Context, pod *corev1.Pod
 	if len(indexStrs) != 2 {
 		return nil, fmt.Errorf("pod name can't be parsed")
 	}
-	cName := indexStrs[1]
+	cName := indexStrs[1]   //集群名称
 	clusterKey := types.NamespacedName{
 		Name:      cName,
 		Namespace: pod.Namespace,

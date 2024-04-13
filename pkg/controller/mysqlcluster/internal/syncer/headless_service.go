@@ -30,6 +30,7 @@ import (
 
 // NewHeadlessSVCSyncer returns a service syncer
 func NewHeadlessSVCSyncer(c client.Client, scheme *runtime.Scheme, cluster *mysqlcluster.MysqlCluster) syncer.Interface {
+	//
 	service := &core.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cluster.GetNameForResource(mysqlcluster.HeadlessSVC),

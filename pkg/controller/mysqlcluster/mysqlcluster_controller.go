@@ -285,6 +285,24 @@ func (r *ReconcileMysqlCluster) Reconcile(ctx context.Context, request reconcile
 // master label in the same time. This can happen for a small period of time
 // when master changes.
 func (r *ReconcileMysqlCluster) getPodSyncers(cluster *mysqlcluster.MysqlCluster) []syncer.Interface {
+	/*
+	这段代码定义了一个名为 getPodSyncers 的函数，它是 ReconcileMysqlCluster 结构体的一个方法。这个函数的目的是为集群中的每个 Pod 返回一个同步器（syncer）的列表。同步器通常用于确保集群中的 Pod 状态与期望状态保持一致。
+
+	函数的核心逻辑是：
+
+	初始化一个空的同步器列表 syncers。
+	遍历集群状态中的每个节点（cluster.Status.Nodes）。
+	对于每个节点，检查它是否为主节点（Master）。这是通过调用 getCondAsBool 函数并传入节点状态和一个表示“主节点”条件的常量来实现的。
+	如果节点不是主节点（即它是副本节点），则创建一个新的 Pod 同步器，并将其添加到 syncers 列表中。
+	在所有副本节点的同步器都被添加后，再次遍历集群状态中的每个节点。
+	这次，只添加那些被标记为主节点的同步器。
+	最终，syncers 列表会按照预期的顺序包含所有的副本节点同步器和主节点同步器。副本节点同步器在前，主节点同步器在后。
+
+	这种排序是为了避免在主节点发生变化时出现短暂的时间内有两个 Pod 同时带有主节点标签的情况。因为副本节点同步器会首先被处理，所以当主节点发生变化时，新的主节点同步器会在旧的主节点同步器之前被创建，从而减少了冲突的可能性。
+
+	函数最后返回填充好的 syncers 列表。
+
+	*/
 	syncers := []syncer.Interface{}
 
 	// add replica syncers, those should be the first in this list.

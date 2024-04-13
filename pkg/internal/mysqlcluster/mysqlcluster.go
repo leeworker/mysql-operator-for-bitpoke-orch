@@ -227,6 +227,9 @@ func (c *MysqlCluster) IsPerconaImage() bool {
 
 // ShouldHaveInitContainerForMysql checks the MySQL version and returns true or false if the docker image supports or not init only
 func (c *MysqlCluster) ShouldHaveInitContainerForMysql() bool {
+	/*这个方法的主要作用是检查 MysqlCluster 是否是基于Percona的MySQL镜像，
+	并且其版本是否在指定的范围内。如果都满足，那么返回 true，表示应该有一个init-only容器。否则，返回 false。
+	*/
 	expectedRange := semver.MustParseRange(">=5.7.26 <8.0.0 || >=8.0.15")
 
 	return c.IsPerconaImage() && expectedRange(c.GetMySQLSemVer())
