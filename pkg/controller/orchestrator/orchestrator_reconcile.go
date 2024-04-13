@@ -370,9 +370,14 @@ func (ou *orcUpdater) updateNodesInOrc(instances InstancesSet) (InstancesSet, []
 		if inst := instances.GetInstance(host); inst == nil {
 			// if index node is bigger than total ready nodes than should not be
 			// added in discover list because maybe pod is not created yet
+			//如果索引节点大于总准备节点，则不应该大于
+			//添加到发现列表中，因为可能pod尚未创建
+
 			if i < ou.cluster.Status.ReadyNodes {
 				// host is not present into orchestrator
 				// register new host into orchestrator
+				// host不存在于orchestrator中
+				//在orchestrator中注册新主机
 				hostKey := orc.InstanceKey{
 					Hostname: host,
 					Port:     mysqlPort,
@@ -586,9 +591,11 @@ func (ou *orcUpdater) removeNodeConditionNotInOrc(insts InstancesSet) {
 	}
 
 	// remove nodes status for nodes that are not desired, nodes that are left behind from scale down
+	//删除不需要的节点状态，从scale down中留下的节点
 	validIndex := 0
 	for _, ns := range ou.cluster.Status.Nodes {
 		// save only the nodes that are desired [0, 1, ..., replicas-1] or if index can't be extracted
+		//只保存需要的节点[0,1，…]， replicas-1]或者无法提取索引
 		index, err := indexInSts(ns.Name)
 		if err != nil {
 			ou.log.Info("failed to parse hostname for index - won't be removed", "error", err)
